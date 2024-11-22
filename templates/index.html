@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diary Website</title>
+  <!-- Link Tailwind CSS -->
+  <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+
+  <!-- Main Container -->
+  <div class="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6 lg:p-12">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-center text-blue-500 mb-6">
+      Welcome to Your Diary
+    </h1>
+    <p class="text-center text-gray-600 text-sm md:text-base mb-8">
+      Your personal space to write, reflect, and grow.
+    </p>
+
+    <!-- Buttons to Toggle Forms -->
+    <div class="flex justify-center mb-6 space-x-4">
+      <button id="loginBtn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition">
+        Login
+      </button>
+      <button id="signupBtn" class="bg-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-700 transition">
+        Sign Up
+      </button>
+    </div>
+
+    <!-- Forms Section -->
+    <div class="space-y-6">
+
+      <!-- Login Form -->
+      <div id="loginForm" class="bg-gray-50 p-6 rounded-lg shadow-inner">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Login</h2>
+        <form action="/login" method="POST" class="space-y-4">
+          <div>
+            <label for="login-email" class="block text-sm font-medium text-gray-600">Email</label>
+            <input type="email" id="login-email" name="email" required
+              class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
+          </div>
+          <div>
+            <label for="login-password" class="block text-sm font-medium text-gray-600">Password</label>
+            <input type="password" id="login-password" name="password" required
+              class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
+          </div>
+          <button type="submit"
+            class="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition">
+            Login
+          </button>
+        </form>
+      </div>
+
+      <!-- Signup Form -->
+      <div id="signupForm" class="bg-gray-50 p-6 rounded-lg shadow-inner hidden">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Sign Up</h2>
+        <form action="/signup" method="POST" class="space-y-4">
+          <div>
+            <label for="signup-name" class="block text-sm font-medium text-gray-600">Name</label>
+            <input type="text" id="signup-name" name="name" required
+              class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
+          </div>
+          <div>
+            <label for="signup-email" class="block text-sm font-medium text-gray-600">Email</label>
+            <input type="email" id="signup-email" name="email" required
+              class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
+          </div>
+          <div>
+            <label for="signup-password" class="block text-sm font-medium text-gray-600">Password</label>
+            <input type="password" id="signup-password" name="password" required
+              class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
+          </div>
+          <button type="submit"
+            class="w-full bg-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-700 transition">
+            Sign Up
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-8 text-center text-gray-500 text-sm">
+      &copy; 2024 Componentity - Your Diary Website. All rights reserved.
+    </footer>
+  </div>
+
+  <!-- JavaScript for Toggling Forms -->
+  <script>
+    const loginBtn = document.getElementById('loginBtn');
+    const signupBtn = document.getElementById('signupBtn');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+
+    loginBtn.addEventListener('click', () => {
+      loginForm.classList.remove('hidden');
+      signupForm.classList.add('hidden');
+    });
+
+    signupBtn.addEventListener('click', () => {
+      signupForm.classList.remove('hidden');
+      loginForm.classList.add('hidden');
+    });
+  </script>
+</body>
+</html>
