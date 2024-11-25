@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diary Home</title>
+  <link rel="icon" href="/static/src/icon.jpg" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.css"
+    integrity="sha512-OQDNdI5rpnZ0BRhhJc+btbbtnxaj+LdQFeh0V9/igiEPDiWE2fG+ZsXl0JEH+bjXKPJ3zcXqNyP4/F/NegVdZg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="fixed top-5 left-5 z-50" id="toast-container">
+      {% for category, message in messages %}
+      <div class="flex items-center w-60 text-center justify-between px-4 py-3 rounded-lg shadow-lg text-white mb-4 sm:w-96 transition-opacity duration-500 ease-in-out opacity-100
+  {% if category == 'success' %}
+    bg-green-500
+  {% elif category == 'danger' %}
+    bg-red-500
+  {% elif category == 'warning' %}
+    bg-yellow-500
+  {% elif category == 'info' %}
+    bg-blue-500
+  {% endif %}
+">
+        <span class="">
+          <i class="mr-4 
+{% if category == 'success' %}
+  ri-checkbox-circle-line text-white
+{% elif category == 'danger' %}
+  ri-close-circle-line text-white
+{% elif category == 'warning' %}
+  ri-alert-line text-white
+{% elif category == 'info' %}
+  ri-information-line text-white
+{% endif %}
+" style="font-size: 23px;"></i>
+
+          {{ message }}</span>
+        <button type="button" class="text-white ml-4 focus:outline-none"
+          onclick="this.parentElement.style.display='none';">
+          &times;
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+  <!-- Mood Modal -->
+  <div id="moodModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
+
+    <div class="bg-white p-6 rounded-lg shadow-lg space-y-4 relative">
+      <!-- Close Button (X) -->
+      <button id="closeModalBtn" class="absolute top-2 right-2 text-xl text-gray-700 bg-transparent border-none rounded-full p-2 hover:bg-gray-200">
+        &times;
+      </button>
+  
+     
+      <h2 class="text-xl font-bold text-center mb-6">What is your mood?</h2>
+      <form action="{{ url_for('new_entry') }}" method="POST" class="grid grid-cols-3 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+        <button name="mood" value="Joy" class="mood-btn bg-yellow-500 text-white py-3 px-6 rounded-lg hover:bg-yellow-600 transition">Joy</button>
+        <button name="mood" value="Sadness" class="mood-btn bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition">Sadness</button>
+        <button name="mood" value="Anger" class="mood-btn bg-red-500 text-white py-3 px-6 rounded-lg hover:bg-red-600 transition">Anger</button>
+        <button name="mood" value="Fear" class="mood-btn bg-gray-500 text-white py-3 px-6 rounded-lg hover:bg-gray-600 transition">Fear</button>
+        <button name="mood" value="Disgust" class="mood-btn bg-green-500 text-white py-3 px-6 rounded-lg hover:bg-green-600 transition">Disgust</button>
+        <button name="mood" value="Embarrassment" class="mood-btn bg-purple-500 text-white py-3 px-6 rounded-lg hover:bg-purple-600 transition text-sm sm:text-base md:text-lg truncate">Embarrassment</button>
+      </form>
+      
+      
+    </div>
+  </div>
+  
+
+  <!-- Header -->
+  <header class="w-full bg-blue-600 text-white py-4 text-center flex justify-between items-center px-10">
+    <h1 class="text-2xl font-bold">Your Diary</h1>
+  
+    <!-- Logout Button -->
+    <form action="{{ url_for('logout') }}" method="POST">
+      <button type="submit" class="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md">Logout</button>
+    </form>
+  </header>
+  <!-- Add Entry Button -->
+  <main class="p-6 space-y-4 w-full max-w-2xl">
+    <!-- Flex container for Add Button and Search Bar -->
+    <div class="flex items-center space-x-4 mb-6">
+      <!-- Add Entry Button -->
+      <button id="addEntryBtn" class="flex items-center justify-center w-12 h-12 bg-blue-600 text-white text-2xl rounded-full hover:bg-blue-700 transition">
+        +
+      </button>
+  
+      <!-- Search Bar -->
+      <input type="text" id="searchInput" placeholder="Search entries..." class="w-64 py-2 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+    </div>
+  
+    <!-- Entries Container -->
+    <div id="entries-container">
+      {% for entry in entries %}
+      <div data-title="{{ entry.title }}" data-content="{{ entry.content }}" class="entry-container flex items-center justify-between p-4 mb-4 rounded-lg
+        {% if entry.mood == 'Joy' %} bg-yellow-200
+        {% elif entry.mood == 'Sadness' %} bg-blue-200
+        {% elif entry.mood == 'Anger' %} bg-red-200
+        {% elif entry.mood == 'Fear' %} bg-gray-300
+        {% elif entry.mood == 'Disgust' %} bg-green-200
+        {% elif entry.mood == 'Embarrassment' %} bg-purple-200
+        {% else %} bg-white
+        {% endif %}">
+        <!-- Make the entire container clickable -->
+        <a href="{{ url_for('edit_entry', entry_id=entry['entry_id']) }}" class="w-full flex justify-between">
+          <!-- Title and brief content preview -->
+          <div>
+            <h3 class="text-xl font-semibold">{{ entry.title }}</h3>
+            <p class="text-gray-700">{{ entry.content[:100] }}...</p>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </main>
+  
+
+
+
+  <footer class="mt-8 text-center text-gray-500 text-sm">
+    &copy; 2024 Componentity - Your Diary Website. All rights reserved.
+  </footer>
+
+  <script>
+
+document.getElementById('closeModalBtn').addEventListener('click', function() {
+  document.getElementById('moodModal').classList.add('hidden');
+});
+
+
+    const moodModal = document.getElementById('moodModal');
+    const addEntryBtn = document.getElementById('addEntryBtn');
+    const entryForm = document.getElementById('entryForm');
+  
+    // Show mood modal when clicking the "Add Entry" button
+    addEntryBtn.addEventListener('click', () => {
+      moodModal.classList.remove('hidden'); // Show the modal
+    });
+  
+    // Hide mood modal after selecting a mood
+    document.querySelectorAll('.mood-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        moodModal.classList.add('hidden'); // Hide the modal
+        entryForm.classList.remove('hidden'); // Show the entry form
+      });
+    });
+
+
+
+    document.getElementById('searchInput').addEventListener('input', function() {
+    let searchQuery = this.value.toLowerCase(); // Get the value of the search input
+    let entries = document.querySelectorAll('.entry-container'); // Select all entry containers
+
+    entries.forEach(entry => {
+      let title = entry.getAttribute('data-title').toLowerCase();
+      let content = entry.getAttribute('data-content').toLowerCase();
+
+      // If the search query matches either title or content, show the entry, otherwise hide it
+      if (title.includes(searchQuery) || content.includes(searchQuery)) {
+        entry.style.display = ''; // Show the entry
+      } else {
+        entry.style.display = 'none'; // Hide the entry
+      }
+    });
+  });
+  </script>
+  
+</body>
+</html>

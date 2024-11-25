@@ -5,10 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Diary Website</title>
   <!-- Link Tailwind CSS -->
+  <link rel="icon" href="/static/src/icon-circular.ico" type="image/x-icon">
+
   <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.css"
+    integrity="sha512-OQDNdI5rpnZ0BRhhJc+btbbtnxaj+LdQFeh0V9/igiEPDiWE2fG+ZsXl0JEH+bjXKPJ3zcXqNyP4/F/NegVdZg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="fixed top-5 left-5 z-50" id="toast-container">
+    {% for category, message in messages %}
+    <div class="flex items-center w-60 text-center justify-between px-4 py-3 rounded-lg shadow-lg text-white mb-4 sm:w-96 transition-opacity duration-500 ease-in-out opacity-100
+{% if category == 'success' %}
+  bg-green-500
+{% elif category == 'danger' %}
+  bg-red-500
+{% elif category == 'warning' %}
+  bg-yellow-500
+{% elif category == 'info' %}
+  bg-blue-500
+{% endif %}
+">
+      <span class="">
+        <i class="mr-4 
+{% if category == 'success' %}
+ri-checkbox-circle-line text-white
+{% elif category == 'danger' %}
+ri-close-circle-line text-white
+{% elif category == 'warning' %}
+ri-alert-line text-white
+{% elif category == 'info' %}
+ri-information-line text-white
+{% endif %}
+" style="font-size: 23px;"></i>
 
+        {{ message }}</span>
+      <button type="button" class="text-white ml-4 focus:outline-none"
+        onclick="this.parentElement.style.display='none';">
+        &times;
+      </button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
   <!-- Main Container -->
   <div class="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6 lg:p-12">
     <h1 class="text-3xl md:text-4xl font-extrabold text-center text-blue-500 mb-6">

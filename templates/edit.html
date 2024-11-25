@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Entry</title>
+  <link rel="icon" href="/static/src/icon.jpg" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.css"
+    integrity="sha512-OQDNdI5rpnZ0BRhhJc+btbbtnxaj+LdQFeh0V9/igiEPDiWE2fG+ZsXl0JEH+bjXKPJ3zcXqNyP4/F/NegVdZg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-6">
+
+  <!-- Header -->
+  <header class="w-full bg-blue-600 text-white py-4 text-center">
+    <h1 class="text-2xl font-bold">Edit Entry</h1>
+  </header>
+
+  <!-- Edit Form -->
+  <main class="w-full max-w-2xl mt-6 space-y-4">
+    <form action="{{ url_for('edit_entry', entry_id=entry['entry_id']) }}" method="POST" class="space-y-4">
+      <!-- Editable Title -->
+      <h2 class="text-lg font-bold">
+        Title: 
+        <input type="text" name="title" value="{{ entry['title'] }}" placeholder="Untitled" 
+          class="bg-transparent border-none focus:ring-0 focus:outline-none text-xl font-semibold" required>
+      </h2>
+
+      <!-- Diary Content with Dynamic Background Color Based on Mood -->
+      <textarea name="content" rows="10" placeholder="Write your thoughts here..." required
+        class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 p-4
+          {% if entry['mood'] == 'Joy' %} bg-yellow-200
+          {% elif entry['mood'] == 'Sadness' %} bg-blue-200
+          {% elif entry['mood'] == 'Anger' %} bg-red-200
+          {% elif entry['mood'] == 'Fear' %} bg-gray-300
+          {% elif entry['mood'] == 'Disgust' %} bg-green-200
+          {% elif entry['mood'] == 'Embarrassment' %} bg-purple-200
+          {% else %} bg-white
+          {% endif %}">
+        {{ entry['content'] }}
+      </textarea>
+
+      <!-- Hidden Input to Store Mood Value -->
+      <input type="hidden" name="mood" value="{{ entry['mood'] }}">
+
+      <!-- Button to Save the Entry -->
+      <button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition">
+        Update Entry
+      </button>
+    </form>
+  </main>
+
+  <footer class="mt-8 text-center text-gray-500 text-sm">
+    &copy; 2024 Componentity - Your Diary Website. All rights reserved.
+  </footer>
+</body>
+</html>
