@@ -2,24 +2,45 @@ import os
 from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
 import mysql.connector
 from mysql.connector import Error
+import os
+import psycopg2
+from flask import Flask
 
 app = Flask(__name__)
 application = app
 app.secret_key = os.urandom(24)
 
+# Function to connect to the correct database (MySQL or PostgreSQL)
 def get_db_connection():
-    try:
-        conn = mysql.connector.connect(
-            host="localhost",  
-            user="root",       
-            password="",       
-            database="dairy"
-        )
-        print("Success")
-        return conn
-    except Error as e:
-        print(f"Error connecting to MySQL: {e}")
-        return None
+    if os.getenv("USE_POSTGRES", "False") == "True":
+        # Connect to PostgreSQL on Render
+        try:
+            conn = psycopg2.connect(
+                host="dpg-ct2qko5svqrc738f55m0-a.oregon-postgres.render.com",
+                port="5432",
+                database="kupal",
+                user="kupal_user",
+                password="ZgdCyVqzqUSvGCoCFiR76DX54P4UrmLp"
+            )
+            print("Connected to PostgreSQL on Render")
+            return conn
+        except Exception as e:
+            print(f"Error connecting to PostgreSQL: {e}")
+            return None
+    else:
+        # Connect to local MySQL
+        try:
+            conn = mysql.connector.connect(
+                host="localhost",
+                user="root",
+                password="",
+                database="dairy"
+            )
+            print("Connected to MySQL on localhost")
+            return conn
+        except Error as e:
+            print(f"Error connecting to MySQL: {e}")
+            return None
 
 
 
@@ -35,7 +56,7 @@ def home():
         flash("Please login to access this page", "warning")
         return redirect(url_for('login'))
 
-    # Fetch the user's diary entries from the database
+  
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT * FROM diary_entries WHERE user_id = %s", (session['user_id'],))
@@ -48,12 +69,12 @@ def home():
 
 @app.route('/edit_entry/<int:entry_id>', methods=['GET', 'POST'])
 def edit_entry(entry_id):
-    # Ensure the user is logged in
+ 
     if 'user_id' not in session:
         flash("Please log in first.", "warning")
         return redirect(url_for('login'))
 
-    # Get the entry details from the database based on entry_id
+    
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT * FROM diary_entries WHERE entry_id = %s AND user_id = %s", (entry_id, session['user_id']))
@@ -69,7 +90,7 @@ def edit_entry(entry_id):
         content = request.form['content']
         mood = request.form['mood']
 
-        # Update the entry in the database
+        
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute("""
@@ -94,7 +115,7 @@ def login():
         email = request.form['email']
         password = request.form['password']
         
-        # Database query
+     
         conn = get_db_connection()
         if conn:
             cursor = conn.cursor(dictionary=True)
@@ -102,8 +123,8 @@ def login():
             user = cursor.fetchone()
             conn.close()
 
-            # Validate user credentials
-            if user and user['password_hash'] == password:  # Directly comparing passwords
+           
+            if user and user['password_hash'] == password:  
                 # Set session
                 session['user_id'] = user['user_id']
                 session['username'] = user['username']
@@ -118,13 +139,13 @@ def login():
 
 @app.route('/new_entry', methods=['POST'])
 def new_entry():
-    mood = request.form.get('mood')  # Get the mood value from the button
+    mood = request.form.get('mood')  
     return render_template('entry.html', title="Untitled", mood=mood)
 
 
 @app.route('/save_entry', methods=['POST'])
 def save_entry():
-    # Ensure the user is logged in
+   
     if 'user_id' not in session:
         flash("Please log in first.", "warning")
         return redirect(url_for('login'))
@@ -133,14 +154,13 @@ def save_entry():
     title = request.form['title']
     content = request.form['content']
     mood = request.form['mood']
-    user_id = session['user_id']  # Retrieve user_id from the session
-
-    # Save the entry to the database (example using MySQL)
+    user_id = session['user_id'] 
+    
     conn = get_db_connection()
     cursor = conn.cursor()
 
     try:
-        # Insert diary entry with user_id
+      
         cursor.execute("""
             INSERT INTO diary_entries (title, content, mood, user_id) 
             VALUES (%s, %s, %s, %s)
@@ -164,7 +184,7 @@ def signup():
         email = request.form['email']
         password = request.form['password']
 
-        # Check if the email already exists
+    
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
@@ -175,7 +195,7 @@ def signup():
             flash("Email already registered. Please log in.", "danger")
             return redirect(url_for('login'))  # Redirect to login if email exists
 
-        # Directly store the password (NOT recommended for security)
+       
         conn = get_db_connection()
         cursor = conn.cursor()
         try:
@@ -185,22 +205,21 @@ def signup():
             """, (name, email, password))  # Store plain text password (unsafe)
             conn.commit()
             flash("Account created successfully! Please log in.", "success")
-            return redirect(url_for('login'))  # Redirect to login after successful signup
+            return redirect(url_for('login'))  
         except mysql.connector.Error as err:
             conn.rollback()
             flash(f"Error registering user: {err}", "danger")
         finally:
             conn.close()
 
-    return render_template('index.html')  # Render the signup page if GET request
+    return render_template('index.html') 
 
 @app.route('/logout', methods=['POST'])
 def logout():
-    # Clear the session (logs the user out)
-    session.clear()  # or session.pop('user_id', None) if you're tracking specific session variables
+  
+    session.clear() 
     flash("You have been logged out successfully!", "success")
-    return redirect(url_for('login'))  # Redirect to login page
-
+    return redirect(url_for('login'))
 
 if __name__ == "__main__":
     app.run(debug=True)

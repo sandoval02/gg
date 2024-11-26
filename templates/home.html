@@ -79,25 +79,24 @@
   <header class="w-full bg-blue-600 text-white py-4 text-center flex justify-between items-center px-10">
     <h1 class="text-2xl font-bold">Your Diary</h1>
   
-    <!-- Logout Button -->
+
     <form action="{{ url_for('logout') }}" method="POST">
       <button type="submit" class="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md">Logout</button>
     </form>
   </header>
-  <!-- Add Entry Button -->
+
   <main class="p-6 space-y-4 w-full max-w-2xl">
-    <!-- Flex container for Add Button and Search Bar -->
+
     <div class="flex items-center space-x-4 mb-6">
-      <!-- Add Entry Button -->
+     
       <button id="addEntryBtn" class="flex items-center justify-center w-12 h-12 bg-blue-600 text-white text-2xl rounded-full hover:bg-blue-700 transition">
         +
       </button>
   
-      <!-- Search Bar -->
+   
       <input type="text" id="searchInput" placeholder="Search entries..." class="w-64 py-2 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
     </div>
-  
-    <!-- Entries Container -->
+ 
     <div id="entries-container">
       {% for entry in entries %}
       <div data-title="{{ entry.title }}" data-content="{{ entry.content }}" class="entry-container flex items-center justify-between p-4 mb-4 rounded-lg
@@ -109,9 +108,9 @@
         {% elif entry.mood == 'Embarrassment' %} bg-purple-200
         {% else %} bg-white
         {% endif %}">
-        <!-- Make the entire container clickable -->
+
         <a href="{{ url_for('edit_entry', entry_id=entry['entry_id']) }}" class="w-full flex justify-between">
-          <!-- Title and brief content preview -->
+   
           <div>
             <h3 class="text-xl font-semibold">{{ entry.title }}</h3>
             <p class="text-gray-700">{{ entry.content[:100] }}...</p>
