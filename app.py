@@ -8,7 +8,7 @@ from flask import Flask
 
 app = Flask(__name__)
 application = app
-app.secret_key = os.urandom(24)
+app.secret_key = os.getenv("SECRET_KEY", os.urandom(24))
 
 # Function to connect to the correct database (MySQL or PostgreSQL)
 def get_db_connection():
