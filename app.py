@@ -6,6 +6,16 @@ from werkzeug.security import generate_password_hash, check_password_hash
 db = SQLAlchemy()  # Initialize the SQLAlchemy instance
 app = Flask(__name__, static_url_path='/static', static_folder='static')
 
+
+
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
+@app.before_request
+def log_request_info():
+    app.logger.info('Request Path: %s', request.path)
+    
 # Define the '/index' route outside of register_routes
 @app.route('/index')
 def index():
