@@ -6,6 +6,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 db = SQLAlchemy()  # Initialize the SQLAlchemy instance
 app = Flask(__name__, static_url_path='/static', static_folder='static')
 
+# Define the '/index' route outside of register_routes
+@app.route('/index')
+def index():
+    return render_template("index.html")
 
 def create_app():
     app.secret_key = os.getenv("SECRET_KEY", os.urandom(24))  # Use secret key from environment or random
@@ -21,10 +25,9 @@ def create_app():
     with app.app_context():
         db.create_all()  # Ensure database tables are created
 
-    # Register routes
+    # Register routes (other routes)
     register_routes(app)
     return app
-
 
 # Models
 class User(db.Model):
@@ -47,10 +50,6 @@ class DiaryEntry(db.Model):
 
 # Routes
 def register_routes(app):
-    @app.route('/index')
-    def index():
-        return render_template("index.html")
-
     @app.route('/home')
     def home():
         if 'user_id' not in session:
@@ -146,7 +145,7 @@ def register_routes(app):
         flash("Entry saved successfully!", "success")
         return redirect(url_for('home'))
 
-    
+
     @app.errorhandler(404)
     def page_not_found(e):
         return render_template("404.html"), 404
