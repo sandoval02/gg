@@ -7,12 +7,11 @@ db = SQLAlchemy()  # Initialize the SQLAlchemy instance
 app = Flask(__name__)
 
 def create_app():
-    app = Flask(__name__)
     app.secret_key = os.getenv("SECRET_KEY", os.urandom(24))
-
-    # Use the deployed PostgreSQL database
+    
+    # Database configuration
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
-        "DATABASE_URL",
+        "DATABASE_URL", 
         "postgresql://kupal_user:ZgdCyVqzqUSvGCoCFiR76DX54P4UrmLp@dpg-ct2qko5svqrc738f55m0-a.oregon-postgres.render.com/kupal"
     )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -23,7 +22,6 @@ def create_app():
 
     # Register routes
     register_routes(app)
-
     return app
 
 
@@ -150,4 +148,6 @@ def register_routes(app):
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))  # Get the port from the environment, default to 5000
+    app.run(host="0.0.0.0", port=port, debug=True)  # Bind to all IPs, use dynamic port
+
