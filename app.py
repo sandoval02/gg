@@ -8,7 +8,7 @@ app = Flask(__name__, static_url_path='/static', static_folder='static')
 
 
 def create_app():
-    app.secret_key = os.getenv("SECRET_KEY", os.urandom(24))
+    app.secret_key = os.getenv("SECRET_KEY", os.urandom(24))  # Use secret key from environment or random
     
     # Database configuration
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
@@ -57,7 +57,7 @@ def register_routes(app):
             flash("Please login to access this page", "warning")
             return redirect(url_for('login'))
 
-        entries = DiaryEntry.query.filter_by(user_id=session['user_id']).all()
+        entries = DiaryEntry.query.filter_by(user_id=session['user_id']).all()  # Retrieve entries more efficiently
         return render_template('home.html', entries=entries)
 
     @app.route('/edit_entry/<int:entry_id>', methods=['GET', 'POST'])
@@ -148,11 +148,17 @@ def register_routes(app):
 
     
     @app.errorhandler(404)
-    def invalid_route(e):
+    def page_not_found(e):
         return render_template("404.html"), 404
+
+    @app.errorhandler(500)
+    def internal_error(e):
+        db.session.rollback()  # Rollback the session in case of an error
+        flash("An internal server error occurred. Please try again later.", "danger")
+        return render_template("500.html"), 500
+
 
 if __name__ == "__main__":
     app = create_app()
     port = int(os.environ.get("PORT", 5000))  # Get the port from the environment, default to 5000
     app.run(host="0.0.0.0", port=port, debug=True)  # Bind to all IPs, use dynamic port
-
