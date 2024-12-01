@@ -4,7 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()  # Initialize the SQLAlchemy instance
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static', static_folder='static')
+
 
 def create_app():
     app.secret_key = os.getenv("SECRET_KEY", os.urandom(24))
@@ -46,7 +47,7 @@ class DiaryEntry(db.Model):
 
 # Routes
 def register_routes(app):
-    @app.route('/')
+    @app.route('/index')
     def index():
         return render_template("index.html")
 
@@ -145,6 +146,10 @@ def register_routes(app):
         flash("Entry saved successfully!", "success")
         return redirect(url_for('home'))
 
+    
+    @app.errorhandler(404)
+    def invalid_route(e):
+        return render_template("404.html"), 404
 
 if __name__ == "__main__":
     app = create_app()
