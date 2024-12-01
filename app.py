@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()  # Initialize the SQLAlchemy instance
-
+app = Flask(__name__)
 
 def create_app():
     app = Flask(__name__)
